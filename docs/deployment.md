@@ -84,12 +84,23 @@ Sau đó đặt budget workspace; mặc định **$0** để không tự phát s
 
 1. Push repository riêng của Nex AI Hub tới Git provider do bạn quản lý.
 2. Import repository vào Vercel, Framework **Next.js**, Root Directory thư mục gốc repo, Node.js **22.x**.
-3. Install `npm ci`; Build `npm run build`; giữ output directory mặc định Next.js.
+3. Repo có `vercel.json` chỉ định framework `nextjs`, Install `npm ci`, Build `npm run build`, Output Directory `.next`. File này ghi đè các mục tương ứng trên Dashboard để tránh deploy nhầm thành static site. Root Directory vẫn phải là thư mục gốc repo, không chọn `public`, `src` hoặc `prototype`.
 4. Thêm 5 biến ứng dụng ở bảng trên cho môi trường cần dùng. `APP_URL` phải khớp domain của môi trường đó. Preview dùng staging Supabase, không chia sẻ database production cho preview không được tin cậy.
 5. Chọn Functions region gần Supabase. Chat khai báo `maxDuration=300`; xác nhận plan hỗ trợ thời gian này. Ứng dụng tự dừng provider sau 240 giây để dành thời gian ghi kết quả.
 6. Deploy; cập nhật Auth Site URL/redirect allowlist theo domain cuối. Kiểm tra login, cookie, refresh và mọi bước nghiệm thu ở dưới.
 
 Vercel CDN không cache trang/API có dữ liệu tài khoản (`private, no-store`). CSP dùng nonce theo request, nên app route được render động. Static JS/CSS vẫn hưởng cache theo hash. Không cần server websocket chạy thường trực.
+
+### Khi trang báo Vercel `404 NOT_FOUND`
+
+Nếu `/login` và `/setup` trả Vercel 404 nhưng `/import-template.json` trả 200, deployment đang phục vụ tài nguyên tĩnh của repo mà chưa có các route ứng dụng hoạt động. Đây là dấu hiệu cần kiểm tra framework/build output, không phải lỗi mật khẩu Owner. Chỉ từ HTTP chưa thể biết chính xác giá trị cấu hình Dashboard nào sai.
+
+1. Trong **Settings → Build and Deployment**, kiểm tra Root Directory là gốc repo và framework Next.js.
+2. Trong **Deployments**, chọn deployment chứa commit mới có `vercel.json`; kiểm tra Build Logs có chạy `next build`, có các route `/login`, `/setup` và Next.js Functions trong output.
+3. Đợi deployment Ready và được gán domain production. Nếu Git không tự deploy, tạo deployment từ nhánh `main` mới nhất; redeploy một commit cũ sẽ không có bản sửa.
+4. Mở `/login`: phải có giao diện Nex AI Hub và HTTP 200. Thiếu biến môi trường sẽ hiện hướng dẫn setup, không phải trang Vercel 404. File static trả 200 một mình chưa đủ để nghiệm thu deployment.
+
+Tham khảo: [Vercel 404](https://vercel.com/kb/guide/why-is-my-deployed-project-giving-404), [cấu hình vercel.json](https://vercel.com/docs/project-configuration/vercel-json).
 
 ### Bật GitHub Actions sau khi push
 
