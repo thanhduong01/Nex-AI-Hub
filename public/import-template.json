@@ -1,0 +1,14 @@
+{
+  "format": "nex-ai-hub-v1",
+  "conversations": [
+    {
+      "title": "Ví dụ: kế hoạch nghiên cứu",
+      "source": "normalized",
+      "source_id": "example-001",
+      "messages": [
+        { "role": "user", "content": "Nội dung câu hỏi gốc", "created_at": "2026-11-03T02:00:00Z" },
+        { "role": "assistant", "content": "Nội dung phản hồi gốc", "created_at": "2026-11-03T02:01:00Z" }
+      ]
+    }
+  ]
+}
