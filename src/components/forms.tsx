@@ -56,13 +56,26 @@ export function ActionForm({
 }) {
   const [busy, start] = useTransition(),
     [error, setError] = useState(''),
-    [message, setMessage] = useState('');
+    [message, setMessage] = useState(''),
+    [savedConnection, setSavedConnection] = useState(false);
   const router = useRouter();
   return (
     <form
       className={className}
+      onInvalidCapture={(e) => {
+        const target = e.target as HTMLElement;
+        const details = target.closest('details');
+        if (details) details.open = true;
+      }}
+      onChange={() => {
+        if (kind === 'connection') {
+          setSavedConnection(false);
+          setMessage('');
+        }
+      }}
       onSubmit={(e) => {
         e.preventDefault();
+        if (busy || savedConnection) return;
         setError('');
         setMessage('');
         const form = e.currentTarget,
@@ -126,6 +139,11 @@ export function ActionForm({
               form.closest('dialog')?.close();
               router.push(`${kind === 'project' ? '/projects' : '/chat'}/${res.id}`);
             } else {
+              if (kind === 'connection') {
+                const keyInput = form.querySelector<HTMLInputElement>('input[name="api_key"]');
+                if (keyInput) keyInput.value = '';
+                setSavedConnection(true);
+              }
               setMessage(res.message || 'Đã lưu thay đổi.');
               router.refresh();
             }
@@ -147,8 +165,14 @@ export function ActionForm({
             {message}
           </p>
         ) : null}
-        <button type="submit" className="btn primary" disabled={busy}>
-          {busy ? 'Đang xử lý…' : label}
+        <button type="submit" className="btn primary" disabled={busy || savedConnection}>
+          {busy
+            ? kind === 'connection'
+              ? 'Đang kiểm tra và lưu…'
+              : 'Đang xử lý…'
+            : savedConnection
+              ? 'Đã lưu kết nối'
+              : label}
         </button>
       </fieldset>
     </form>

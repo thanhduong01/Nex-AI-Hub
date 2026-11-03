@@ -4,7 +4,7 @@
 
 ## Trạng thái
 
-Code, database migrations và kiểm thử tự động đã được chuẩn bị. Chưa kết nối Supabase, SMTP, API provider hoặc deploy lên Vercel theo yêu cầu cấu hình sau của người dùng. Không có tài khoản thật, chi phí AI hay dữ liệu doanh nghiệp được tạo trong quá trình phát triển.
+Code, database migrations và kiểm thử tự động đã được chuẩn bị. Ứng dụng đã được deploy tại [nexaihub.vercel.app](https://nexaihub.vercel.app/). Kiểm chứng tự động không thay thế nghiệm thu đăng nhập Supabase, SMTP và chat bằng API key thật; không phát sinh lượt AI tính phí trong kiểm thử.
 
 CI GitHub Actions được cung cấp dưới dạng [file mẫu](docs/ci/github-actions.yml.example), chưa bật do token push thiếu quyền `workflow`. Xem [cách bật CI](docs/deployment.md#bật-github-actions-sau-khi-push).
 
@@ -31,7 +31,7 @@ npm run start       # chạy bản build
 - Login email/password, khôi phục mật khẩu, invitation, logout; cookie HttpOnly và phiên Hub tối đa 7 ngày kể từ đăng nhập. Reset mật khẩu thu hồi mọi phiên Hub, khóa nhân viên chặn request tiếp theo.
 - Dự án, chỉnh sửa, lưu trữ, chia sẻ viewer/contributor. Owner được đọc toàn bộ nhưng không tự có quyền ghi dự án khác.
 - Hội thoại theo dự án; tạo nhánh khi đổi AI; lưu prompt trước gọi AI, streaming, checkpoint, stop, thử lại thành lượt mới, tìm kiếm và xuất JSON.
-- OpenAI, Anthropic, Gemini qua API tập trung; encrypted credentials, quyền theo nhân viên, model/giá/output cap do Owner cấu hình. Meta chưa có adapter chat.
+- OpenAI, Anthropic, Gemini qua API tập trung; Owner chọn nền tảng và dán API key, kiểm tra khóa/model trước khi lưu; có sẵn model và đơn giá tham khảo. Khóa mã hóa, quyền theo nhân viên; cấu hình chi tiết nằm trong Tùy chọn nâng cao. Meta chưa có adapter chat.
 - Budget chung/cá nhân, giữ trước atomic, idempotency, một run đang chạy/conversation; lỗi chưa có usage giữ trạng thái chờ đối soát.
 - Quản lý tài khoản/gói website riêng với API; quản lý nhân viên, hạn mức, nhật ký truy cập và thay đổi.
 - Tải/lưu tài liệu riêng tư. AI đọc văn bản UTF-8 được chọn rõ ràng; PDF hiện lưu và tải về, chưa có OCR/trích xuất.
@@ -47,4 +47,4 @@ npm run start       # chạy bản build
 
 ## Các giới hạn cần biết
 
-MVP chat văn bản, không web search/grounding, agent/tools, ảnh/voice hoặc browser-session sharing. Import một chiều; chưa tự đồng bộ website. Giá token do Owner nhập và cần kiểm chứng với model thực; báo cáo Hub không thay thế hóa đơn provider. Lịch sử hiển thị 200 tin gần nhất; ngữ cảnh AI dùng tối đa 40 tin hoàn chỉnh gần đây và giới hạn byte. Hạ tầng thật, multi-connection concurrency và provider quota cần nghiệm thu sau provisioning; không tuyên bố phần mềm tuyệt đối không có lỗi.
+MVP chat văn bản, không web search/grounding, agent/tools, ảnh/voice hoặc browser-session sharing. Import một chiều; chưa tự đồng bộ website. Giá token dùng preset tham khảo hoặc do Owner nhập cho model tùy chỉnh, cần đối chiếu với nhà cung cấp; báo cáo Hub không thay thế hóa đơn provider. Lịch sử hiển thị 200 tin gần nhất; ngữ cảnh AI dùng tối đa 40 tin hoàn chỉnh gần đây và giới hạn byte. Hạ tầng thật, multi-connection concurrency và provider quota cần nghiệm thu sau provisioning; không tuyên bố phần mềm tuyệt đối không có lỗi.

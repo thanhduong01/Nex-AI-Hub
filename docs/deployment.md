@@ -82,7 +82,11 @@ npm run dev
 
 Mở đúng origin trong `APP_URL`. Nếu `APP_URL=http://localhost:3000` mà bạn mở `http://127.0.0.1:3000`, kiểm tra origin sẽ từ chối mutation; chọn một địa chỉ nhất quán.
 
-Đăng nhập Owner → Nguồn AI → thêm kết nối → điền model ID, đơn giá token hiện hành và API key → kiểm tra khóa. “Kiểm tra khóa” chỉ gọi API danh sách model, không sinh câu trả lời tính phí và không chứng minh còn đủ billing quota.
+Đăng nhập Owner → Nguồn AI → chọn OpenAI, Claude hoặc Gemini → **Kết nối** → dán API key → **Kiểm tra và kết nối**. Nút **Lấy API key** mở trang tạo khóa chính thức. Hub có sẵn model văn bản và đơn giá tham khảo, kiểm tra ngày 03/11/2026. Mở **Tùy chọn nâng cao** để đổi tên, model, đơn giá, giới hạn phản hồi hoặc quyền sử dụng. Đổi model tùy chỉnh cần nhập lại giá; cấu hình đã lưu không bị đổi theo preset mới.
+
+Kết nối mới mặc định cấp quyền cho nhân viên đang hoạt động, hiển thị số người trước khi lưu. Nhân viên được mời sau đó cần được Owner cấp thêm quyền. Khóa và model được kiểm tra qua API metadata trước khi lưu; không sinh câu trả lời tính phí và không chứng minh còn đủ billing quota. Nếu khóa bị giới hạn quyền, cho phép đọc metadata model tương ứng. API key được mã hóa, không hiện cho nhân viên.
+
+Phần **Tài khoản & gói website** được thu gọn, chỉ dùng theo dõi subscription. Meta AI chỉ nhập hội thoại; không có nút kết nối chat giả. Không cần migration hoặc biến môi trường mới cho thay đổi giao diện kết nối này.
 
 Sau đó đặt budget workspace; mặc định **$0** để không tự phát sinh phí. Mời nhân viên, cấp kết nối và hạn mức cá nhân. Thử một lượt chat ngắn trong budget đã chấp thuận.
 

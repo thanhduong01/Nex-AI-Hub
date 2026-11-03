@@ -16,6 +16,8 @@ import {
 } from '@/lib/schemas';
 import { AppError, dbError, publicError } from '@/lib/errors';
 import { encryptSecret } from '@/lib/crypto';
+import { connectionKey } from '@/lib/ai/provider';
+import { verifyConnection } from '@/lib/ai/verify-connection';
 import { rateLimit } from '@/lib/http';
 import { appOrigin } from '@/lib/env';
 import { projectData } from '@/lib/data';
@@ -120,9 +122,30 @@ export async function createConversation(input: unknown) {
 export async function saveConnection(input: unknown) {
   return result(async () => {
     const d = connectionSchema.parse(input),
-      { member, sessionId } = await ownerUser();
+      { member, sessionId, db } = await ownerUser();
+    await rateLimit(`connection-save:${member.user_id}`, 10);
     const id = d.id || crypto.randomUUID();
     const { api_key, ...metadata } = d;
+    let existing: { provider: string; model: string; enabled: boolean } | null = null;
+    if (d.id) {
+      const { data, error } = await db
+        .from('connections')
+        .select('provider,model,enabled')
+        .eq('id', id)
+        .eq('workspace_id', member.workspace_id)
+        .maybeSingle();
+      dbError(error);
+      if (!data) throw new AppError('NOT_FOUND', 'Không tìm thấy kết nối.', 404);
+      if (data.provider !== d.provider)
+        throw new AppError('INVALID_INPUT', 'Không thể đổi nền tảng của kết nối hiện có.', 400);
+      existing = data;
+    } else if (!api_key) {
+      throw new AppError('KEY_REQUIRED', 'Dán API key để kết nối nguồn AI.', 400);
+    }
+    const mustVerify =
+      !!api_key || !existing || (d.enabled && (!existing.enabled || d.model !== existing.model));
+    if (mustVerify)
+      await verifyConnection(d.provider, d.model, api_key || (await connectionKey(id)));
     const { error } = await adminClient().rpc('save_connection', {
       p_actor: member.user_id,
       p_session: sessionId,
@@ -131,7 +154,13 @@ export async function saveConnection(input: unknown) {
     });
     dbError(error);
     revalidatePath('/integrations');
-    return { ok: true, id };
+    return {
+      ok: true,
+      id,
+      message: mustVerify
+        ? 'Đã kiểm tra khóa và model, lưu kết nối thành công. Bạn có thể đóng cửa sổ này. Chưa kiểm tra số dư API hoặc thực hiện lượt chat tính phí.'
+        : 'Đã lưu cấu hình nguồn AI.',
+    };
   });
 }
 export async function saveAccount(input: unknown) {
