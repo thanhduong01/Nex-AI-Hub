@@ -56,6 +56,12 @@ Sao lưu khóa mã hóa ở secret manager của doanh nghiệp. Không đổi/x
 
 ## 4. Bootstrap chủ doanh nghiệp
 
+**Cách trực tiếp trên Supabase, không cần terminal:** mở `supabase/bootstrap-owner.sql`, copy toàn bộ vào **SQL Editor → New query** của đúng project. Dùng role `postgres`/quản trị mặc định; thay `v_email`, `v_password`, `v_display_name`, `v_workspace_name` rồi Run. Mật khẩu ít nhất 12 ký tự, tối đa 72 byte UTF-8 do bcrypt. Script tạo Auth user đã xác nhận email, email identity, workspace ngân sách $0 và membership Owner trong một giao dịch. Bảng kết quả phải có email của bạn, `role=owner`, `status=active`; đăng nhập website Vercel bằng email/mật khẩu vừa nhập. Không cần redeploy để nhận tài khoản mới.
+
+SQL này chỉ dành cho Hub mới sau khi đã chạy migrations. Nó từ chối nếu đã có Owner, workspace/thành viên hoặc email Auth trùng; không reset mật khẩu hay nâng quyền tài khoản đang có. Đây là thao tác quản trị trực tiếp trên schema Auth, không đi qua kiểm tra chính sách mật khẩu của Auth API; chọn mật khẩu riêng mạnh. Chỉ sửa mật khẩu trong SQL Editor, không commit bản đã điền vào Git. Cấu trúc Auth có thể thay đổi theo Supabase; lỗi sẽ rollback cả giao dịch. Script CLI bên dưới dùng Admin API vẫn là lựa chọn khi muốn tránh ghi trực tiếp schema Auth.
+
+**Cách bằng terminal:**
+
 Trong `.env.local`, điền thêm `OWNER_EMAIL`, `OWNER_PASSWORD` (ít nhất 12 ký tự), `OWNER_NAME`, `WORKSPACE_NAME`, rồi chạy:
 
 ```sh

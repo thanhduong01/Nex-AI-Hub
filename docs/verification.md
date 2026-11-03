@@ -2,7 +2,7 @@
 
 ## Kết quả
 
-`npm run check` hoàn tất: ESLint, TypeScript strict, **66 tests / 5 files**, production build Next.js đều pass. `npm run format:check` pass. Đây là kiểm chứng trong môi trường phát triển, không phải xác nhận Supabase/provider production đã hoạt động.
+Bản MVP ban đầu đã hoàn tất `npm run check`: ESLint, TypeScript strict, 66 tests / 5 files, production build Next.js đều pass. `npm run format:check` pass. Sau khi bổ sung SQL tạo Owner, toàn bộ **75 tests / 6 files**, ESLint và TypeScript strict đều pass. Đây là kiểm chứng trong môi trường phát triển, không phải xác nhận Supabase/provider production đã hoạt động.
 
 | Bộ kiểm tra | Số test | Phạm vi thực tế |
 |---|---:|---|
@@ -11,8 +11,11 @@
 | `tests/core.test.ts` | 23 | Crypto/tamper/AAD, expiry/redirect, schema/body limit/origin, context isolation, parser imports và CSV injection |
 | `tests/chat-route.test.ts` | 8 | Route handler thật; mock database/provider boundary; reservation trước dispatch, snapshot, stream thành công/lỗi/truncated, idempotency và permission recheck |
 | `tests/export.test.ts` | 3 | Pagination hơn 1.000 dòng, chặn bản xuất thiếu hoặc quá lớn thay vì cắt ngầm |
+| `tests/bootstrap-owner.test.ts` | 9 | SQL tạo Owner với pgcrypto thật: bcrypt, email identity, quyền đọc qua session/RLS, chống ghi đè tài khoản, kiểm tra đầu vào và rollback khi lỗi membership |
 
 PGlite dùng một connection và serialize câu lệnh. Test xác minh reservation đã commit được tính cho lượt sau; **chưa** xác minh lock contention bằng nhiều connection Supabase thật. Auth schema/claims trong test SQL là fixture, không phải Supabase Auth service.
+
+SQL tạo Owner chưa chạy trên project Supabase thật. Script nằm ngoài migrations và cần quản trị viên thay các placeholder trong SQL Editor trước khi chạy. Mật khẩu/tài khoản fixture chỉ dùng trong kiểm thử, không được tạo trên production.
 
 ## Những lỗi đã phát hiện và sửa
 

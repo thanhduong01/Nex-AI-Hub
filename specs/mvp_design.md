@@ -55,3 +55,7 @@ Use one Vercel region near Supabase; configure after the database region is know
 - https://ai-sdk.dev/docs/reference/ai-sdk-core/stream-text
 
 Supabase session defaults are not a seven-day guarantee. Hub therefore enforces an absolute deadline in a private session table checked by RLS, independently of optional hosted Auth time-box settings.
+
+## Manual SQL Owner bootstrap (03/11/2026)
+
+User requests a SQL Editor alternative to the CLI bootstrap. Provide a manual script outside migrations with editable placeholders; execute only as the project administrator after migrations. A single transaction creates a confirmed email/password Auth user, email identity, zero-budget workspace, active Owner membership and audit entry. Do not set a JWT role of owner: Auth role remains authenticated and Hub authorization comes from members. Refuse placeholders, invalid/short passwords, bcrypt inputs over 72 bytes, existing users and nonempty Hub data; never reset passwords or promote an existing account. Lock Hub tables during the initial-state check. Do not create public RPCs, change RLS or embed real credentials. Verify actual SQL and bcrypt in PGlite with Auth schema fixtures, including failed-insert rollback and Owner access through the existing session helpers. Hosted Auth login remains an external acceptance check.
